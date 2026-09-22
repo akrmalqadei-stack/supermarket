@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام السوبرماركت - متعدد الفروع</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Tahoma,Arial,sans-serif}
+:root{--bg:#f1f5f9;--card:#fff;--dark:#0f172a;--primary:#0f766e;--blue:#2563eb;--red:#dc2626;--amber:#d97706;--green:#16a34a;--line:#e2e8f0;--muted:#64748b;--text:#0f172a}
+body{background:var(--bg);color:var(--text);min-height:100vh}
+button{border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:var(--primary);color:#fff;font-size:14px;font-weight:600}
+button:hover{filter:brightness(1.08)}
+button.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+button.blue{background:var(--blue)}
+button.red{background:var(--red)}
+button.green{background:var(--green)}
+button.sm{padding:7px 12px;font-size:13px}
+input,select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;outline:none;background:#fff;font-size:14px;font-family:inherit}
+input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 3px #0f766e1a}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px;font-weight:600}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.center{text-align:center}
+#loginPage{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#0f172a 0%,#134e4a 60%,#0f766e 100%)}
+.login{width:100%;max-width:440px;background:#fff;padding:32px 28px;border-radius:22px;box-shadow:0 25px 60px #0006}
+.login .brand{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#0f766e,#14b8a6);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
+.login h2{text-align:center;font-size:21px;margin-bottom:6px}
+.login .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px}
+.login button{width:100%;margin-top:20px;padding:13px;font-size:15px}
+.hint{font-size:12px;color:var(--muted);margin-top:16px;background:#f8fafc;padding:12px;border-radius:9px;line-height:1.9}
+header{background:linear-gradient(135deg,#0f172a,#134e4a);color:#fff;padding:12px 18px}
+.header-inner{max-width:1150px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+header h1{font-size:17px;font-weight:700}
+header .sub{color:#94a3b8;font-size:12px;margin-top:3px}
+.header-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.badge-info{background:#ffffff1a;border:1px solid #ffffff26;padding:6px 12px;border-radius:999px;font-size:12.5px}
+.role-tag{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.role-admin{background:#7c3aed;color:#fff}
+.role-manager{background:#2563eb;color:#fff}
+.role-cashier{background:#16a34a;color:#fff}
+.sync-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#22c55e}
+.sync-dot.offline{background:#f59e0b}
+.header-actions button{background:#dc2626;padding:8px 14px;font-size:13px}
+.nav{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:40}
+.nav-inner{max-width:1150px;margin:auto;display:flex;gap:8px}
+.nav button{background:#fff;color:var(--text);border:1px solid var(--line);padding:8px 14px;border-radius:999px;white-space:nowrap;font-size:13.5px;font-weight:600}
+.nav button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.container{max-width:1150px;margin:auto;padding:16px 14px 60px}
+.section{display:none}
+.section.active{display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);padding:16px;border-radius:14px;border:1px solid #eef2f7}
+.card h3{font-size:13px;color:var(--muted);margin-bottom:8px;font-weight:600}
+.card strong{font-size:21px;font-weight:700}
+.card.acc-blue strong{color:var(--blue)}
+.card.acc-green strong{color:var(--green)}
+.card.acc-amber strong{color:var(--amber)}
+.card.acc-red strong{color:var(--red)}
+.panel{background:var(--card);padding:18px;border-radius:14px;margin-bottom:16px;border:1px solid #eef2f7}
+.panel h2{font-size:16px;margin-bottom:14px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.panel-head h2{margin:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:0 14px}
+@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.product{background:#fff;padding:14px;border-radius:13px;margin-bottom:10px;border:1px solid #eef2f7;border-right:4px solid var(--primary)}
+.product.low{border-right-color:var(--amber)}
+.product.out{border-right-color:var(--red)}
+.product-title{font-weight:700;font-size:16px}
+.product-info{color:var(--muted);margin-top:7px;line-height:1.9;font-size:13.5px}
+.actions{display:flex;gap:7px;margin-top:12px;flex-wrap:wrap}
+.tag{font-size:11px;padding:3px 9px;border-radius:999px;font-weight:700}
+.tag.low{background:#fef3c7;color:#92400e}
+.tag.out{background:#fee2e2;color:#991b1b}
+.tag.ok{background:#dcfce7;color:#166534}
+.tag.cat{background:#e0e7ff;color:#3730a3}
+.tag.role-admin{background:#ede9fe;color:#6d28d9}
+.tag.role-manager{background:#dbeafe;color:#1e40af}
+.tag.role-cashier{background:#dcfce7;color:#166534}
+.tag.active{background:#dcfce7;color:#166534}
+.tag.inactive{background:#fee2e2;color:#991b1b}
+.empty{background:#fff;padding:34px 20px;border-radius:13px;text-align:center;color:var(--muted);border:1px dashed var(--line)}
+.empty .big{font-size:34px;display:block;margin-bottom:8px;opacity:.6}
+.pos{display:grid;grid-template-columns:1fr 330px;gap:14px;align-items:start}
+@media(max-width:820px){.pos{grid-template-columns:1fr}}
+.pos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px;max-height:60vh;overflow-y:auto;padding:2px}
+.pos-tile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;transition:.15s;text-align:right}
+.pos-tile:hover{border-color:var(--primary);box-shadow:0 6px 16px #0f766e1f}
+.pos-tile.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+.pos-tile .name{font-weight:700;font-size:14px;margin-bottom:6px;line-height:1.4;min-height:38px}
+.pos-tile .price{color:var(--primary);font-weight:700;font-size:15px}
+.pos-tile .stock{font-size:11.5px;color:var(--muted);margin-top:5px}
+.cart{background:#fff;border-radius:14px;padding:16px;border:1px solid #eef2f7;position:sticky;top:70px}
+.cart h3{font-size:15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.cart h3 span{background:var(--primary);color:#fff;font-size:11px;padding:2px 9px;border-radius:999px}
+#cartItems{max-height:38vh;overflow-y:auto;margin-bottom:12px}
+.cart-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid #f1f5f9}
+.ci-info{flex:1;min-width:0}
+.ci-info strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-info span{font-size:11.5px;color:var(--muted)}
+.ci-qty{display:flex;align-items:center;gap:6px}
+.ci-qty button{width:26px;height:26px;padding:0;border-radius:7px;font-size:15px;background:#f1f5f9;color:var(--text)}
+.ci-qty span{min-width:20px;text-align:center;font-weight:700;font-size:13px}
+.ci-total{font-size:12.5px;font-weight:700;color:var(--primary);min-width:62px;text-align:left}
+.cart-total{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:2px dashed var(--line);font-size:16px;font-weight:700}
+.cart-total b{color:var(--primary);font-size:19px}
+.cart .cart-btns{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.empty-mini{text-align:center;color:var(--muted);font-size:13px;padding:22px 0}
+.receipt{font-size:13px}
+.receipt-head{text-align:center;border-bottom:2px dashed var(--line);padding-bottom:12px;margin-bottom:12px}
+.receipt-head h2{font-size:17px;margin-bottom:5px}
+.receipt-head p{color:var(--muted);font-size:12px;line-height:1.7}
+.receipt-table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px}
+.receipt-table th{background:#f8fafc;padding:7px 5px;font-size:11.5px;color:var(--muted);text-align:right;font-weight:600}
+.receipt-table td{padding:7px 5px;border-bottom:1px solid #f1f5f9}
+.receipt-total{display:flex;justify-content:space-between;font-size:16px;font-weight:800;padding:11px 0;border-top:2px dashed var(--line)}
+.receipt-total b{color:var(--primary)}
+.thanks{text-align:center;color:var(--muted);font-size:12px;margin-top:10px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px}
+.bar-row .lbl{width:62px;color:var(--muted);font-size:12px;flex-shrink:0}
+.bar-track{flex:1;background:#f1f5f9;border-radius:999px;height:22px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#0f766e,#14b8a6);border-radius:999px;display:flex;align-items:center;justify-content:flex-end;padding-inline-end:8px;color:#fff;font-size:11px;font-weight:700;min-width:34px}
+.rank-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f5f9;font-size:13.5px}
+.rank-item:last-child{border:0}
+.rank-num{width:24px;height:24px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);margin-inline-end:9px;flex-shrink:0}
+.rank-item .rname{flex:1;display:flex;align-items:center}
+.rank-item .rval{color:var(--primary);font-weight:700}
+#toasts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#0f172a;color:#fff;padding:12px 20px;border-radius:11px;font-size:14px;font-weight:600;box-shadow:0 10px 30px #0004;max-width:90vw;text-align:center}
+.toast.ok{background:#0f766e}
+.toast.err{background:#dc2626}
+.toast.warn{background:#d97706}
+.modal{position:fixed;inset:0;background:#0f172acc;z-index:150;display:flex;align-items:center;justify-content:center;padding:18px}
+.modal-box{background:#fff;border-radius:18px;padding:22px;max-width:500px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-box h3{font-size:17px;margin-bottom:12px}
+.modal-box p{color:var(--muted);font-size:14px;line-height:1.7}
+.modal-actions{display:flex;gap:9px;justify-content:flex-start;margin-top:20px;flex-wrap:wrap}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.filters button{background:#fff;color:var(--text);border:1px solid var(--line);padding:8px 14px;font-size:13px}
+.filters button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+table th{background:#f8fafc;padding:11px 10px;text-align:right;font-weight:700;color:var(--muted);font-size:12.5px;border-bottom:1px solid var(--line)}
+table td{padding:11px 10px;border-bottom:1px solid #f1f5f9}
+</style>
+</head>
+<body>
+
+<div id="loginPage">
+  <div class="login">
+    <div class="brand">🛒</div>
+    <h2>نظام إدارة السوبرماركت</h2>
+    <p class="sub">نظام متعدد الفروع - تسجيل الدخول</p>
+    <label>اسم المستخدم</label>
+    <input id="username" type="text" placeholder="اسم المستخدم">
+    <label>كلمة المرور</label>
+    <input id="password" type="password" placeholder="••••••">
+    <button onclick="Auth.login()">دخول →</button>
+    <p id="loginMessage" class="center" style="color:#dc2626;margin-top:12px;font-size:13px;min-height:18px"></p>
+    <div class="hint">
+      <b>حسابات تجريبية:</b><br>
+      👑 مدير النظام: admin / admin123<br>
+      🏢 مدير فرع: manager / manager123<br>
+      🧾 كاشير: cashier / cashier123
+    </div>
+  </div>
+</div>
+
+<div id="system" class="hidden">
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1 id="storeTitle">🛒 نظام إدارة السوبرماركت</h1>
+        <div class="sub" id="headerSub">لوحة التحكم</div>
+      </div>
+      <div class="header-actions">
+        <span class="sync-status">
+          <span class="sync-dot" id="syncDot"></span>
+          <span id="syncLabel">متصل</span>
+        </span>
+        <span class="badge-info">👤 <b id="userBadge">-</b> <span class="role-tag" id="roleBadge">-</span></span>
+        <span class="badge-info hidden" id="branchBadge">🏢 <span id="branchName">-</span></span>
+        <button onclick="Auth.logout()">🚪 خروج</button>
+      </div>
+    </div>
+  </header>
+  <nav class="nav"><div class="nav-inner" id="navInner"></div></nav>
+  <div class="container">
+    <section id="home" class="section active">
+      <div class="cards" id="homeCards"></div>
+      <div class="panel"><h2>⚠️ منتجات تحتاج إعادة طلب</h2><div id="lowStockList"></div></div>
+      <div class="panel"><h2>🏆 الأكثر مبيعاً</h2><div id="topProductsHome"></div></div>
+    </section>
+    <section id="pos" class="section">
+      <div class="pos">
+        <div class="panel" style="margin:0">
+          <input id="posSearch" placeholder="🔍 ابحث..." oninput="renderPosGrid()">
+          <div id="posGrid" class="pos-grid"></div>
+        </div>
+        <aside class="cart">
+          <h3>🧾 الفاتورة <span id="cartCount">0</span></h3>
+          <div id="cartItems"></div>
+          <div class="cart-total"><span>الإجمالي</span><b id="cartTotal">0</b></div>
+          <div class="cart-btns">
+            <button class="green" onclick="POS.checkout()">✅ إتمام البيع</button>
+            <button class="ghost" onclick="POS.clear()">🗑️</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+    <section id="products" class="section">
+      <div class="panel">
+        <h2 id="productFormTitle">➕ إضافة منتج جديد</h2>
+        <div class="grid-2">
+          <div><label>اسم المنتج *</label><input id="productName"></div>
+          <div><label>الباركود</label><input id="barcode"></div>
+          <div><label>التصنيف</label><input id="category"></div>
+          <div><label>سعر الشراء</label><input id="buyPrice" type="number" step="any"></div>
+          <div><label>سعر البيع *</label><input id="sellPrice" type="number" step="any"></div>
+          <div><label>الكمية *</label><input id="quantity" type="number" step="any"></div>
+          <div><label>الحد الأدنى</label><input id="minStock" type="number" step="any"></div>
+        </div>
+        <div class="actions">
+          <button id="productSubmitBtn" onclick="Products.submit()">إضافة المنتج</button>
+          <button class="ghost hidden" id="cancelEditBtn" onclick="Products.cancelEdit()">إلغاء</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>📦 قائمة المنتجات</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="productSearch" placeholder="🔍 بحث..." style="width:180px" oninput="renderProducts()">
+            <select id="productFilter" style="width:150px" onchange="renderProducts()">
+              <option value="all">الكل</option>
+              <option value="low">مخزون منخفض</option>
+              <option value="out">نفد</option>
+            </select>
+          </div>
+        </div>
+        <div id="productList"></div>
+      </div>
+    </section>
+    <section id="sales" class="section">
+      <div class="cards" id="salesCards"></div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>🧾 سجل الفواتير</h2>
+          <input id="saleSearch" placeholder="🔍 بحث..." style="width:200px" oninput="renderSales()">
+        </div>
+        <div class="filters">
+          <button class="active" data-f="today" onclick="setSaleFilter('today',this)">اليوم</button>
+          <button data-f="week" onclick="setSaleFilter('week',this)">7 أيام</button>
+          <button data-f="month" onclick="setSaleFilter('month',this)">هذا الشهر</button>
+          <button data-f="all" onclick="setSaleFilter('all',this)">الكل</button>
+        </div>
+        <div id="salesList"></div>
+      </div>
+    </section>
+    <section id="reports" class="section">
+      <div class="cards" id="reportCards"></div>
+      <div class="panel"><h2>📅 مبيعات آخر 7 أيام</h2><div id="weekChart"></div></div>
+      <div class="panel"><h2>🏆 الأكثر مبيعاً</h2><div id="topProducts"></div></div>
+      <div class="panel"><h2>🗂️ المبيعات حسب التصنيف</h2><div id="catReport"></div></div>
+      <div class="panel"><h2>👥 مبيعات الموظفين (الكاشير)</h2><div id="cashierReport"></div></div>
+    </section>
+    <section id="users" class="section">
+      <div class="panel">
+        <h2 id="userFormTitle">➕ إضافة مستخدم</h2>
+        <div class="grid-2">
+          <div><label>الاسم الكامل *</label><input id="uFullName"></div>
+          <div><label>اسم المستخدم *</label><input id="uUsername"></div>
+          <div><label>كلمة المرور *</label><input id="uPassword" type="password"></div>
+          <div>
+            <label>الدور *</label>
+            <select id="uRole">
+              <option value="cashier">🧾 كاشير</option>
+              <option value="manager">🏢 مدير فرع</option>
+              <option value="admin">👑 مدير النظام</option>
+            </select>
+          </div>
+          <div>
+            <label>الفرع</label>
+            <select id="uBranch"><option value="">- بدون -</option></select>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="userSubmitBtn" onclick="Users.submit()">إضافة المستخدم</button>
+          <button class="ghost hidden" id="cancelUserEditBtn" onclick="Users.cancelEdit()">إلغاء</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>👥 قائمة المستخدمين</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>الاسم</th><th>المستخدم</th><th>الدور</th><th>الفرع</th><th>الحالة</th><th>إجراءات</th></tr></thead>
+            <tbody id="usersTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section id="branches" class="section">
+      <div class="panel">
+        <h2 id="branchFormTitle">➕ إضافة فرع</h2>
+        <div class="grid-2">
+          <div><label>اسم الفرع *</label><input id="bName"></div>
+          <div><label>العنوان</label><input id="bAddress"></div>
+          <div><label>الهاتف</label><input id="bPhone"></div>
+        </div>
+        <div class="actions">
+          <button id="branchSubmitBtn" onclick="Branches.submit()">إضافة الفرع</button>
+          <button class="ghost hidden" id="cancelBranchEditBtn" onclick="Branches.cancelEdit()">إلغاء</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>🏢 قائمة الفروع</h2>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr><th>الاسم</th><th>العنوان</th><th>الهاتف</th><th>المنتجات</th><th>مبيعات اليوم</th><th>إجراءات</th></tr></thead>
+            <tbody id="branchesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <section id="settings" class="section">
+      <div class="panel">
+        <h2>🏪 بيانات المتجر</h2>
+        <div class="grid-2">
+          <div><label>اسم المتجر</label><input id="setStoreName"></div>
+          <div><label>العملة</label><input id="setCurrency"></div>
+        </div>
+        <div class="actions"><button onclick="Settings.saveStore()">💾 حفظ</button></div>
+      </div>
+      <div class="panel">
+        <h2>🔑 تغيير كلمة المرور</h2>
+        <div class="grid-3">
+          <div><label>الحالية</label><input id="curPass" type="password"></div>
+          <div><label>الجديدة</label><input id="newPass" type="password"></div>
+          <div><label>تأكيد</label><input id="confirmPass" type="password"></div>
+        </div>
+        <div class="actions"><button onclick="Settings.changePassword()">🔐 تحديث</button></div>
+      </div>
+      <div class="panel">
+        <h2>💾 النسخ الاحتياطي</h2>
+        <div class="actions">
+          <button class="blue" onclick="Backup.export()">⬇️ تصدير</button>
+          <button class="ghost" onclick="document.getElementById('importFile').click()">⬆️ استيراد</button>
+          <input type="file" id="importFile" accept=".json" class="hidden" onchange="Backup.import(this)">
+        </div>
+      </div>
+      <div class="panel hidden" id="dangerZone">
+        <h2>⚠️ منطقة الخطر</h2>
+        <button class="red" onclick="Backup.clearAll()">🗑️ حذف جميع البيانات</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="toasts"></div>
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-box">
+    <h3 id="confirmTitle">تأكيد</h3>
+    <p id="confirmText"></p>
+    <div class="modal-actions">
+      <button class="red" id="confirmOk">تأكيد</button>
+      <button class="ghost" id="confirmCancel">إلغاء</button>
+    </div>
+  </div>
+</div>
+<div id="receiptModal" class="modal hidden">
+  <div class="modal-box">
+    <div id="receiptBody"></div>
+    <div class="modal-actions">
+      <button onclick="window.print()">🖨️ طباعة</button>
+      <button class="ghost" onclick="document.getElementById('receiptModal').classList.add('hidden')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const state = {
+  users: [], branches: [], products: [], sales: [],
+  settings: { storeName: "سوبرماركت النخبة", currency: "ريال", counter: 1000 },
+  cart: [], saleFilter: "today",
+  editingProductId: null, editingUserId: null, editingBranchId: null
+};
+
+const $ = id => document.getElementById(id);
+function uid(){ return Date.now() + Math.floor(Math.random() * 10000); }
+function pad(n){ return String(n).padStart(2, "0"); }
+function fmt(n){ return (Number(n) || 0).toLocaleString("en-US", { maximumFractionDigits: 2 }); }
+function money(n){ return fmt(n) + " " + state.settings.currency; }
+function dayKey(d){ const x = new Date(d); return x.getFullYear() + "-" + pad(x.getMonth()+1) + "-" + pad(x.getDate()); }
+function fmtDate(iso){ const d = new Date(iso); if (isNaN(d)) return "-"; return d.getFullYear() + "/" + pad(d.getMonth()+1) + "/" + pad(d.getDate()) + " - " + pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+function isToday(iso){ return dayKey(iso) === dayKey(new Date()); }
+function escapeHTML(t){ return String(t ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }
+function toast(msg, type = "ok"){
+  const el = document.createElement("div");
+  el.className = "toast " + type;
+  el.textContent = msg;
+  $("toasts").appendChild(el);
+  setTimeout(() => el.remove(), 2400);
+}
+function askConfirm(text, title = "تأكيد", okText = "تأكيد"){
+  return new Promise(res => {
+    const m = $("confirmModal");
+    $("confirmTitle").textContent = title;
+    $("confirmText").textContent = text;
+    $("confirmOk").textContent = okText;
+    m.classList.remove("hidden");
+    $("confirmOk").onclick = () => { m.classList.add("hidden"); res(true); };
+    $("confirmCancel").onclick = () => { m.classList.add("hidden"); res(false); };
+  });
+}
+
+const PERMISSIONS = {
+  admin: ["home","pos","products","sales","reports","users","branches","settings"],
+  manager: ["home","pos","products","sales","reports","settings"],
+  cashier: ["home","pos","sales"]
+};
+const ROLE_LABELS = { admin: "مدير النظام", manager: "مدير فرع", cashier: "كاشير" };
+
+const Auth = {
+  user: null,
+  async login(){
+    const u = $("username").value.trim();
+    const p = $("password").value;
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: u, password: p })
+      });
+      if (!res.ok){
+        $("loginMessage").textContent = "بيانات الدخول غير صحيحة";
+        return;
+      }
+      const { user, settings } = await res.json();
+      this.user = user;
+      state.settings = settings;
+      sessionStorage.setItem("sm_user_id", user.id);
+      $("loginPage").classList.add("hidden");
+      $("system").classList.remove("hidden");
+      await fetchAllData();
+      this.renderHeader();
+      Navigation.render();
+      renderAll();
+      toast("مرحباً " + user.fullName + " 👋", "ok");
+    } catch(e){
+      $("loginMessage").textContent = "تعذر الاتصال بالخادم";
+    }
+  },
+  logout(){
+    this.user = null;
+    sessionStorage.removeItem("sm_user_id");
+    $("system").classList.add("hidden");
+    $("loginPage").classList.remove("hidden");
+    $("username").value = "";
+    $("password").value = "";
+    state.cart = [];
+  },
+  can(action){ if (!this.user) return false; return (PERMISSIONS[this.user.role] || []).includes(action); },
+  renderHeader(){
+    if (!this.user) return;
+    $("userBadge").textContent = this.user.fullName;
+    const rb = $("roleBadge");
+    rb.textContent = ROLE_LABELS[this.user.role];
+    rb.className = "role-tag role-" + this.user.role;
+    $("storeTitle").textContent = "🛒 " + state.settings.storeName;
+    const bb = $("branchBadge");
+    if (this.user.branchId){
+      const b = state.branches.find(x => x.id === this.user.branchId);
+      if (b){ bb.classList.remove("hidden"); $("branchName").textContent = b.name; }
+    } else {
+      bb.classList.add("hidden");
+    }
+  },
+  async checkSession(){
+    const uid2 = Number(sessionStorage.getItem("sm_user_id"));
+    if (!uid2) return;
+    await fetchAllData();
+    const user = state.users.find(x => x.id === uid2);
+    if (!user || !user.active) return;
+    this.user = user;
+    $("loginPage").classList.add("hidden");
+    $("system").classList.remove("hidden");
+    this.renderHeader();
+    Navigation.render();
+    renderAll();
+  }
+};
+
+const Navigation = {
+  icons: { home: "🏠 الرئيسية", pos: "🛒 نقطة البيع", products: "📦 المنتجات", sales: "🧾 الفواتير", reports: "📊 التقارير", users: "👥 المستخدمون", branches: "🏢 الفروع", settings: "⚙️ الإعدادات" },
+  render(){
+    const perms = PERMISSIONS[Auth.user?.role] || [];
+    $("navInner").innerHTML = perms.map((p, i) =>
+      `<button class="${i === 0 ? "active" : ""}" data-section="${p}" onclick="Navigation.go('${p}',this)">${this.icons[p]}</button>`
+    ).join("");
+    this.go(perms[0]);
+  },
+  go(id, btn){
+    document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+    const sec = $(id); if (sec) sec.classList.add("active");
+    document.querySelectorAll(".nav button").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    else { const b = document.querySelector(`.nav button[data-section="${id}"]`); if (b) b.classList.add("active"); }
+    renderAll();
+  }
+};
+
+const Data = {
+  products(){ if (Auth.user?.role === "admin" && !Auth.user.branchId) return state.products; return state.products.filter(p => p.branchId === Auth.user?.branchId); },
+  sales(){ if (Auth.user?.role === "admin" && !Auth.user.branchId) return state.sales; return state.sales.filter(s => s.branchId === Auth.user?.branchId); }
+};
+
+async function fetchAllData(){
+  try {
+    const res = await fetch("/api/data");
+    const d = await res.json();
+    state.users = d.users; state.branches = d.branches;
+    state.products = d.products; state.sales = d.sales; state.settings = d.settings;
+  } catch(e){ console.error(e); }
+}
+
+async function sendChange(type, payload){
+  try {
+    await fetch("/api/change", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, payload })
+    });
+    await fetchAllData();
+  } catch(e){ console.error(e); }
+}
+
+const Products = {
+  async submit(){
+    const name = $("productName").value.trim();
+    const barcode = $("barcode").value.trim();
+    const category = $("category").value.trim();
+    const buyPrice = Number($("buyPrice").value) || 0;
+    const sellPrice = Number($("sellPrice").value) || 0;
+    const quantity = Number($("quantity").value) || 0;
+    const minStock = Number($("minStock").value) || 0;
+    if (!name){ toast("أدخل اسم المنتج", "err"); return; }
+    if (sellPrice <= 0){ toast("أدخل سعر بيع صحيح", "err"); return; }
+    const branchId = Auth.user.branchId || (state.branches[0]?.id);
+    if (!branchId){ toast("لا يوجد فرع", "err"); return; }
+    if (state.editingProductId){
+      const p = state.products.find(x => x.id === state.editingProductId);
+      if (p){
+        Object.assign(p, { name, barcode, category, buyPrice, sellPrice, quantity, minStock });
+        await sendChange("product.upsert", p);
+        toast("تم التحديث ✅");
+      }
+      this.cancelEdit();
+    } else {
+      const prod = { id: uid(), branchId, name, barcode, category, buyPrice, sellPrice, quantity, minStock, createdAt: new Date().toISOString() };
+      await sendChange("product.upsert", prod);
+      toast("تمت الإضافة ✅");
+    }
+    this.clearForm();
+    renderAll();
+  },
+  edit(id){
+    const p = state.products.find(x => x.id === id);
+    if (!p) return;
+    state.editingProductId = id;
+    $("productName").value = p.name;
+    $("barcode").value = p.barcode || "";
+    $("category").value = p.category || "";
+    $("buyPrice").value = p.buyPrice || "";
+    $("sellPrice").value = p.sellPrice || "";
+    $("quantity").value = p.quantity;
+    $("minStock").value = p.minStock || "";
+    $("productFormTitle").textContent = "✏️ تعديل";
+    $("productSubmitBtn").textContent = "حفظ";
+    $("cancelEditBtn").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  },
+  cancelEdit(){ state.editingProductId = null; this.clearForm(); $("productFormTitle").textContent = "➕ إضافة منتج جديد"; $("productSubmitBtn").textContent = "إضافة المنتج"; $("cancelEditBtn").classList.add("hidden"); },
+  clearForm(){ ["productName","barcode","category","buyPrice","sellPrice","quantity","minStock"].forEach(id => $(id).value = ""); },
+  async remove(id){
+    const p = state.products.find(x => x.id === id);
+    if (!p) return;
+    if (!await askConfirm(`حذف "${p.name}"؟`, "حذف", "حذف")) return;
+    await sendChange("product.delete", { id });
+    state.cart = state.cart.filter(c => c.productId !== id);
+    renderAll();
+    toast("تم الحذف");
+  }
+};
+
+const POS = {
+  add(productId){
+    const p = Data.products().find(x => x.id === productId);
+    if (!p) return;
+    if (p.quantity <= 0){ toast("غير متوفر", "err"); return; }
+    const line = state.cart.find(c => c.productId === productId);
+    const cur = line ? line.qty : 0;
+    if (cur + 1 > p.quantity){ toast("الكمية غير كافية", "err"); return; }
+    if (line) line.qty++; else state.cart.push({ productId, qty: 1 });
+    renderCart();
+  },
+  changeQty(productId, delta){
+    const line = state.cart.find(c => c.productId === productId);
+    if (!line) return;
+    const p = state.products.find(x => x.id === productId);
+    if (!p) return;
+    const nq = line.qty + delta;
+    if (nq <= 0){ state.cart = state.cart.filter(c => c.productId !== productId); }
+    else if (nq > p.quantity){ toast("الكمية غير كافية", "err"); return; }
+    else { line.qty = nq; }
+    renderCart();
+  },
+  total(){ return state.cart.reduce((sum, line) => { const p = state.products.find(x => x.id === line.productId); return p ? sum + p.sellPrice * line.qty : sum; }, 0); },
+  clear(){ if (!state.cart.length) return; state.cart = []; renderCart(); },
+  async checkout(){
+    if (!state.cart.length){ toast("الفاتورة فارغة", "err"); return; }
+    for (const line of state.cart){
+      const p = state.products.find(x => x.id === line.productId);
+      if (!p || p.quantity < line.qty){ toast("الكمية غير كافية", "err"); return; }
+    }
+    const items = []; let total = 0, cost = 0;
+    for (const line of state.cart){
+      const p = state.products.find(x => x.id === line.productId);
+      p.quantity -= line.qty;
+      await sendChange("product.upsert", p);
+      const lt = p.sellPrice * line.qty;
+      total += lt; cost += p.buyPrice * line.qty;
+      items.push({ id: p.id, name: p.name, price: p.sellPrice, qty: line.qty, total: lt });
+    }
+    state.settings.counter = (state.settings.counter || 1000) + 1;
+    const sale = {
+      id: uid(), invoice: state.settings.counter,
+      branchId: Auth.user.branchId || state.branches[0]?.id,
+      cashierId: Auth.user.id, cashierName: Auth.user.fullName,
+      items, total, cost, profit: total - cost,
+      date: new Date().toISOString()
+    };
+    await sendChange("sale.upsert", sale);
+    state.cart = [];
+    renderAll();
+    showReceipt(sale);
+    toast("تم البيع ✅");
+  }
+};
+
+const Users = {
+  async submit(){
+    if (Auth.user.role !== "admin"){ toast("غير مصرح", "err"); return; }
+    const fullName = $("uFullName").value.trim();
+    const username = $("uUsername").value.trim().toLowerCase();
+    const password = $("uPassword").value;
+    const role = $("uRole").value;
+    const branchId = Number($("uBranch").value) || null;
+    if (!fullName || !username || !password){ toast("أكمل الحقول", "err"); return; }
+    const dup = state.users.find(x => x.username.toLowerCase() === username && x.id !== state.editingUserId);
+    if (dup){ toast("اسم المستخدم مستخدم", "err"); return; }
+    if (state.editingUserId){
+      const u = state.users.find(x => x.id === state.editingUserId);
+      if (u){ Object.assign(u, { fullName, username, role, branchId }); if (password) u.password = password; await sendChange("user.upsert", u); toast("تم التحديث"); }
+      this.cancelEdit();
+    } else {
+      const u = { id: uid(), fullName, username, password, role, branchId, active: true, createdAt: new Date().toISOString() };
+      await sendChange("user.upsert", u);
+      toast("تمت الإضافة");
+    }
+    this.clearForm();
+    renderAll();
+  },
+  edit(id){
+    const u = state.users.find(x => x.id === id);
+    if (!u) return;
+    state.editingUserId = id;
+    $("uFullName").value = u.fullName;
+    $("uUsername").value = u.username;
+    $("uPassword").value = "";
+    $("uRole").value = u.role;
+    $("uBranch").value = u.branchId || "";
+    $("userFormTitle").textContent = "✏️ تعديل";
+    $("userSubmitBtn").textContent = "حفظ";
+    $("cancelUserEditBtn").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  },
+  cancelEdit(){ state.editingUserId = null; this.clearForm(); $("userFormTitle").textContent = "➕ إضافة مستخدم"; $("userSubmitBtn").textContent = "إضافة المستخدم"; $("cancelUserEditBtn").classList.add("hidden"); },
+  clearForm(){ ["uFullName","uUsername","uPassword"].forEach(id => $(id).value = ""); $("uRole").value = "cashier"; $("uBranch").value = ""; },
+  async toggleActive(id){
+    const u = state.users.find(x => x.id === id);
+    if (!u) return;
+    if (u.id === Auth.user.id){ toast("لا يمكنك إيقاف حسابك", "err"); return; }
+    u.active = !u.active;
+    await sendChange("user.upsert", u);
+    renderAll();
+    toast(u.active ? "تم التنشيط" : "تم الإيقاف");
+  },
+  async remove(id){
+    const u = state.users.find(x => x.id === id);
+    if (!u) return;
+    if (u.id === Auth.user.id){ toast("لا يمكنك حذف حسابك", "err"); return; }
+    if (!await askConfirm(`حذف "${u.fullName}"؟`, "حذف", "حذف")) return;
+    await sendChange("user.delete", { id });
+    renderAll();
+    toast("تم الحذف");
+  }
+};
+
+const Branches = {
+  async submit(){
+    if (Auth.user.role !== "admin"){ toast("غير مصرح", "err"); return; }
+    const name = $("bName").value.trim();
+    const address = $("bAddress").value.trim();
+    const phone = $("bPhone").value.trim();
+    if (!name){ toast("أدخل الاسم", "err"); return; }
+    if (state.editingBranchId){
+      const b = state.branches.find(x => x.id === state.editingBranchId);
+      if (b){ Object.assign(b, { name, address, phone }); await sendChange("branch.upsert", b); toast("تم التحديث"); }
+      this.cancelEdit();
+    } else {
+      const b = { id: uid(), name, address, phone, createdAt: new Date().toISOString() };
+      await sendChange("branch.upsert", b);
+      toast("تمت الإضافة");
+    }
+    this.clearForm();
+    renderAll();
+  },
+  edit(id){
+    const b = state.branches.find(x => x.id === id);
+    if (!b) return;
+    state.editingBranchId = id;
+    $("bName").value = b.name;
+    $("bAddress").value = b.address || "";
+    $("bPhone").value = b.phone || "";
+    $("branchFormTitle").textContent = "✏️ تعديل";
+    $("branchSubmitBtn").textContent = "حفظ";
+    $("cancelBranchEditBtn").classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  },
+  cancelEdit(){ state.editingBranchId = null; this.clearForm(); $("branchFormTitle").textContent = "➕ إضافة فرع"; $("branchSubmitBtn").textContent = "إضافة الفرع"; $("cancelBranchEditBtn").classList.add("hidden"); },
+  clearForm(){ ["bName","bAddress","bPhone"].forEach(id => $(id).value = ""); },
+  async remove(id){
+    const b = state.branches.find(x => x.id === id);
+    if (!b) return;
+    if (!await askConfirm(`حذف الفرع "${b.name}"؟`, "حذف", "حذف")) return;
+    await sendChange("branch.delete", { id });
+    renderAll();
+    toast("تم الحذف");
+  }
+};
+
+const Settings = {
+  async saveStore(){
+    state.settings.storeName = $("setStoreName").value.trim() || "متجر";
+    state.settings.currency = $("setCurrency").value.trim() || "ريال";
+    await sendChange("settings.update", { storeName: state.settings.storeName, currency: state.settings.currency });
+    Auth.renderHeader();
+    renderAll();
+    toast("تم الحفظ ✅");
+  },
+  async changePassword(){
+    const cur = $("curPass").value;
+    const nw = $("newPass").value;
+    const cf = $("confirmPass").value;
+    if (cur !== Auth.user.password){ toast("كلمة المرور الحالية خاطئة", "err"); return; }
+    if (nw.length < 4){ toast("كلمة المرور قصيرة", "err"); return; }
+    if (nw !== cf){ toast("غير متطابقتين", "err"); return; }
+    Auth.user.password = nw;
+    await sendChange("user.upsert", Auth.user);
+    ["curPass","newPass","confirmPass"].forEach(id => $(id).value = "");
+    toast("تم التحديث 🔐");
+  }
+};
+
+const Backup = {
+  export(){
+    const data = { app: "supermarket", version: 2, exportedAt: new Date().toISOString(), users: state.users, branches: state.branches, products: state.products, sales: state.sales, settings: state.settings };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `backup-${dayKey(new Date())}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast("تم التصدير ⬇️");
+  },
+  import(input){
+    const f = input.files[0]; if (!f) return;
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const d = JSON.parse(e.target.result);
+        if (!Array.isArray(d.products)) throw new Error("bad");
+        if (!await askConfirm("سيتم استبدال البيانات. متابعة؟", "استيراد", "استيراد")) return;
+        for (const u of d.users) await sendChange("user.upsert", u);
+        for (const b of (d.branches || [])) await sendChange("branch.upsert", b);
+        for (const p of d.products) await sendChange("product.upsert", p);
+        for (const s of (d.sales || [])) await sendChange("sale.upsert", s);
+        await fetchAllData();
+        renderAll();
+        toast("تم الاستيراد ✅");
+      } catch(err){ toast("ملف غير صالح", "err"); }
+      input.value = "";
+    };
+    reader.readAsText(f);
+  },
+  async clearAll(){
+    if (!await askConfirm("سيتم حذف جميع البيانات!", "حذف الكل", "حذف")) return;
+    await fetch("/api/clear-all", { method: "POST" });
+    await fetchAllData();
+    renderAll();
+    toast("تم الحذف");
+  }
+};
+
+function renderAll(){
+  if (!Auth.user) return;
+  renderHome();
+  renderPosGrid();
+  renderCart();
+  renderProducts();
+  renderSales();
+  renderReports();
+  renderUsers();
+  renderBranches();
+  renderSettings();
+  renderRoleVisibility();
+}
+
+function renderRoleVisibility(){
+  if (Auth.user?.role === "admin") $("dangerZone").classList.remove("hidden");
+  else $("dangerZone").classList.add("hidden");
+}
+
+function renderHome(){
+  const myP = Data.products();
+  const myS = Data.sales();
+  const todayS = myS.filter(s => isToday(s.date));
+  const todayTotal = todayS.reduce((t,s) => t + s.total, 0);
+  const todayProfit = todayS.reduce((t,s) => t + s.profit, 0);
+  const totalSales = myS.reduce((t,s) => t + s.total, 0);
+  const totalProfit = myS.reduce((t,s) => t + s.profit, 0);
+  const stockVal = myP.reduce((t,p) => t + p.sellPrice * p.quantity, 0);
+  const lowList = myP.filter(p => p.quantity <= p.minStock);
+
+  $("homeCards").innerHTML = `
+    <div class="card acc-green"><h3>💰 مبيعات اليوم</h3><strong>${money(todayTotal)}</strong></div>
+    <div class="card acc-blue"><h3>📈 أرباح اليوم</h3><strong>${money(todayProfit)}</strong></div>
+    <div class="card"><h3>🧾 فواتير اليوم</h3><strong>${todayS.length}</strong></div>
+    <div class="card acc-amber"><h3>⚠️ مخزون منخفض</h3><strong>${lowList.length}</strong></div>
+    <div class="card"><h3>📦 المنتجات</h3><strong>${myP.length}</strong></div>
+    <div class="card"><h3>🏷️ قيمة المخزون</h3><strong>${money(stockVal)}</strong></div>
+    <div class="card acc-green"><h3>💵 إجمالي المبيعات</h3><strong>${money(totalSales)}</strong></div>
+    <div class="card acc-blue"><h3>📊 إجمالي الأرباح</h3><strong>${money(totalProfit)}</strong></div>
+  `;
+
+  const lb = $("lowStockList");
+  if (!lowList.length) lb.innerHTML = `<div class="empty" style="padding:22px"><span class="big">✅</span>جميع المنتجات جيدة</div>`;
+  else lb.innerHTML = lowList.sort((a,b) => a.quantity - b.quantity).map(p => `
+    <div class="rank-item">
+      <div class="rname"><div class="rank-num">${p.quantity <= 0 ? "✕" : "!"}</div>${escapeHTML(p.name)}</div>
+      <span class="tag ${p.quantity <= 0 ? "out" : "low"}">${fmt(p.quantity)}</span>
+    </div>`).join("");
+
+  const top = topProductsData(myS).slice(0, 5);
+  $("topProductsHome").innerHTML = top.length ? top.map((d, i) => `
+    <div class="rank-item">
+      <div class="rname"><div class="rank-num">${i+1}</div>${escapeHTML(d.name)}</div>
+      <div class="rval">${fmt(d.qty)} قطعة</div>
+    </div>`).join("")
+    : `<div class="empty" style="padding:22px"><span class="big">📊</span>لا مبيعات</div>`;
+}
+
+function renderPosGrid(){
+  const grid = $("posGrid"); if (!grid) return;
+  const q = ($("posSearch")?.value || "").trim().toLowerCase();
+  let items = Data.products().filter(p => !q || p.name.toLowerCase().includes(q) || (p.barcode || "").toLowerCase().includes(q));
+  items.sort((a,b) => a.name.localeCompare(b.name, "ar"));
+  if (!items.length){ grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><span class="big">🔍</span>لا منتجات</div>`; return; }
+  grid.innerHTML = items.map(p => `
+    <div class="pos-tile ${p.quantity <= 0 ? "disabled" : ""}" onclick="POS.add(${p.id})">
+      <div class="name">${escapeHTML(p.name)}</div>
+      <div class="price">${money(p.sellPrice)}</div>
+      <div class="stock">المتوفر: ${fmt(p.quantity)}</div>
+    </div>`).join("");
+}
+
+function renderCart(){
+  const box = $("cartItems"); if (!box) return;
+  if (!state.cart.length) box.innerHTML = `<div class="empty-mini">لم تُضف أصناف</div>`;
+  else box.innerHTML = state.cart.map(line => {
+    const p = state.products.find(x => x.id === line.productId);
+    if (!p) return "";
+    return `<div class="cart-item">
+      <div class="ci-info"><strong>${escapeHTML(p.name)}</strong><span>${money(p.sellPrice)}</span></div>
+      <div class="ci-qty"><button onclick="POS.changeQty(${p.id},1)">+</button><span>${line.qty}</span><button onclick="POS.changeQty(${p.id},-1)">−</button></div>
+      <div class="ci-total">${money(p.sellPrice * line.qty)}</div>
+    </div>`;
+  }).join("");
+  $("cartTotal").textContent = money(POS.total());
+  $("cartCount").textContent = state.cart.reduce((s, l) => s + l.qty, 0);
+}
+
+function renderProducts(){
+  const list = $("productList"); if (!list) return;
+  const q = ($("productSearch")?.value || "").trim().toLowerCase();
+  const filter = $("productFilter")?.value || "all";
+  let items = Data.products().filter(p => {
+    const mQ = !q || p.name.toLowerCase().includes(q) || (p.barcode || "").toLowerCase().includes(q) || (p.category || "").toLowerCase().includes(q);
+    const st = stockState(p);
+    const mF = filter === "all" || (filter === "low" && st === "low") || (filter === "out" && st === "out");
+    return mQ && mF;
+  });
+  items.sort((a,b) => a.name.localeCompare(b.name, "ar"));
+  if (!items.length){ list.innerHTML = `<div class="empty"><span class="big">📦</span>لا منتجات</div>`; return; }
+  const isAdmin = Auth.user.role === "admin" && !Auth.user.branchId;
+  list.innerHTML = items.map(p => {
+    const st = stockState(p);
+    const tag = st === "out" ? '<span class="tag out">نفد</span>' : st === "low" ? '<span class="tag low">منخفض</span>' : '<span class="tag ok">متوفر</span>';
+    const branch = state.branches.find(b => b.id === p.branchId);
+    return `<div class="product ${st === "low" ? "low" : st === "out" ? "out" : ""}">
+      <div class="product-title">${escapeHTML(p.name)} ${tag} ${p.category ? `<span class="tag cat">${escapeHTML(p.category)}</span>` : ""} ${isAdmin && branch ? `<span class="tag cat">🏢 ${escapeHTML(branch.name)}</span>` : ""}</div>
+      <div class="product-info"><b>باركود:</b> ${escapeHTML(p.barcode || "-")} | <b>شراء:</b> ${money(p.buyPrice)} | <b>بيع:</b> ${money(p.sellPrice)}<br><b>كمية:</b> ${fmt(p.quantity)} | <b>حد:</b> ${fmt(p.minStock)}</div>
+      <div class="actions">
+        <button class="blue sm" onclick="Products.edit(${p.id})">✏️ تعديل</button>
+        <button class="red sm" onclick="Products.remove(${p.id})">🗑️ حذف</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function stockState(p){ if (p.quantity <= 0) return "out"; if (p.quantity <= p.minStock) return "low"; return "ok"; }
+
+function setSaleFilter(f, btn){
+  state.saleFilter = f;
+  document.querySelectorAll(".filters button").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderSales();
+}
+
+function filteredSales(){
+  const now = new Date();
+  return Data.sales().filter(s => {
+    const d = new Date(s.date);
+    if (state.saleFilter === "today") return isToday(s.date);
+    if (state.saleFilter === "week") return (now - d) / 86400000 <= 7;
+    if (state.saleFilter === "month") return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    return true;
+  });
+}
+
+function renderSales(){
+  const list = $("salesList"); if (!list) return;
+  const q = ($("saleSearch")?.value || "").trim().toLowerCase();
+  let items = filteredSales().filter(s => !q || String(s.invoice).includes(q) || s.items.some(i => i.name.toLowerCase().includes(q)))
+    .sort((a,b) => new Date(b.date) - new Date(a.date));
+  const sum = items.reduce((t,s) => t + s.total, 0);
+  const profit = items.reduce((t,s) => t + s.profit, 0);
+  $("salesCards").innerHTML = `
+    <div class="card acc-green"><h3>💵 الإجمالي</h3><strong>${money(sum)}</strong></div>
+    <div class="card"><h3>🧾 الفواتير</h3><strong>${items.length}</strong></div>
+    <div class="card acc-blue"><h3>📊 الربح</h3><strong>${money(profit)}</strong></div>`;
+  if (!items.length){ list.innerHTML = `<div class="empty"><span class="big">🧾</span>لا فواتير</div>`; return; }
+  const isAdmin = Auth.user.role === "admin" && !Auth.user.branchId;
+  list.innerHTML = items.map(s => {
+    const branch = state.branches.find(b => b.id === s.branchId);
+    return `<div class="sale-card" style="background:#fff;border:1px solid #eef2f7;border-radius:13px;padding:14px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-weight:700;font-size:14.5px">فاتورة #${s.invoice} ${isAdmin && branch ? `<span class="tag cat">🏢 ${escapeHTML(branch.name)}</span>` : ""}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px">${fmtDate(s.date)} · 👤 ${escapeHTML(s.cashierName || "-")}</div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-weight:800;color:var(--primary);font-size:16px">${money(s.total)}</div>
+          <div style="font-size:12px;color:var(--muted)">ربح: ${money(s.profit)}</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:var(--muted);line-height:1.9;border-top:1px solid #f1f5f9;padding-top:9px">
+        ${s.items.map(i => `<div style="display:flex;justify-content:space-between"><span>${escapeHTML(i.name)} × ${i.qty}</span><span>${money(i.total)}</span></div>`).join("")}
+      </div>
+      <div class="actions">
+        <button class="ghost sm" onclick="showReceiptById(${s.id})">🧾 عرض</button>
+        ${Auth.user.role !== "cashier" ? `<button class="red sm" onclick="deleteSale(${s.id})">↩️ إرجاع</button>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function deleteSale(id){
+  const s = state.sales.find(x => x.id === id);
+  if (!s) return;
+  if (!await askConfirm(`إرجاع الفاتورة #${s.invoice}؟`, "إرجاع", "إرجاع")) return;
+  for (const item of s.items){
+    const p = state.products.find(x => x.id === item.id);
+    if (p){ p.quantity += item.qty; await sendChange("product.upsert", p); }
+  }
+  await sendChange("sale.delete", { id });
+  renderAll();
+  toast("تم الإرجاع");
+}
+
+function topProductsData(salesArr){
+  const map = new Map();
+  salesArr.forEach(s => s.items.forEach(i => {
+    const cur = map.get(i.name) || { name: i.name, qty: 0, total: 0 };
+    cur.qty += i.qty; cur.total += i.total;
+    map.set(i.name, cur);
+  }));
+  return [...map.values()].sort((a,b) => b.qty - a.qty);
+}
+
+function renderReports(){
+  const myS = Data.sales();
+  const myP = Data.products();
+  const totalSales = myS.reduce((t,s) => t + s.total, 0);
+  const totalProfit = myS.reduce((t,s) => t + s.profit, 0);
+  const count = myS.length;
+  const avg = count ? totalSales / count : 0;
+  const stockBuy = myP.reduce((t,p) => t + p.buyPrice * p.quantity, 0);
+  const stockSell = myP.reduce((t,p) => t + p.sellPrice * p.quantity, 0);
+  const units = myP.reduce((t,p) => t + p.quantity, 0);
+
+  $("reportCards").innerHTML = `
+    <div class="card acc-green"><h3>💵 المبيعات</h3><strong>${money(totalSales)}</strong></div>
+    <div class="card acc-blue"><h3>📈 الأرباح</h3><strong>${money(totalProfit)}</strong></div>
+    <div class="card"><h3>🧾 الفواتير</h3><strong>${count}</strong></div>
+    <div class="card acc-amber"><h3>🧮 المتوسط</h3><strong>${money(avg)}</strong></div>
+    <div class="card"><h3>🏷️ مخزون (شراء)</h3><strong>${money(stockBuy)}</strong></div>
+    <div class="card acc-blue"><h3>💰 مخزون (بيع)</h3><strong>${money(stockSell)}</strong></div>
+    <div class="card acc-green"><h3>🎯 ربح متوقع</h3><strong>${money(stockSell - stockBuy)}</strong></div>
+    <div class="card"><h3>📦 القطع</h3><strong>${fmt(units)}</strong></div>`;
+
+  const days = [];
+  for (let i = 6; i >= 0; i--){
+    const d = new Date(); d.setDate(d.getDate() - i);
+    days.push({ key: dayKey(d), label: d.toLocaleDateString("ar-EG", { weekday: "short" }), total: 0 });
+  }
+  myS.forEach(s => { const d = days.find(x => x.key === dayKey(s.date)); if (d) d.total += s.total; });
+  const max = Math.max(...days.map(d => d.total), 1);
+  $("weekChart").innerHTML = days.map(d => {
+    const pct = Math.max((d.total / max) * 100, d.total > 0 ? 8 : 0);
+    return `<div class="bar-row"><div class="lbl">${d.label}</div><div class="bar-track"><div class="bar-fill" style="width:${pct}%">${d.total > 0 ? fmt(d.total) : ""}</div></div></div>`;
+  }).join("");
+
+  const top = topProductsData(myS).slice(0, 8);
+  $("topProducts").innerHTML = top.length ? top.map((d, i) => `
+    <div class="rank-item"><div class="rname"><div class="rank-num">${i+1}</div>${escapeHTML(d.name)}</div>
+    <div><span class="rval">${fmt(d.qty)} قطعة</span> <span class="muted" style="font-size:12px">· ${money(d.total)}</span></div></div>`).join("")
+    : `<div class="empty"><span class="big">🏆</span>لا مبيعات</div>`;
+
+  const catMap = new Map();
+  myS.forEach(s => s.items.forEach(i => {
+    const p = myP.find(x => x.id === i.id);
+    const cat = (p && p.category) ? p.category : "غير مصنف";
+    const cur = catMap.get(cat) || { cat, qty: 0, total: 0 };
+    cur.qty += i.qty; cur.total += i.total;
+    catMap.set(cat, cur);
+  }));
+  const cats = [...catMap.values()].sort((a,b) => b.total - a.total);
+  const cmax = Math.max(...cats.map(c => c.total), 1);
+  $("catReport").innerHTML = cats.length ? cats.map(c => `
+    <div class="bar-row"><div class="lbl" style="width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHTML(c.cat)}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${Math.max((c.total/cmax)*100,10)}%">${money(c.total)}</div></div></div>`).join("")
+    : `<div class="empty"><span class="big">🗂️</span>لا بيانات</div>`;
+
+  renderCashierReport();
+}
+
+function renderCashierReport(){
+  const box = $("cashierReport"); if (!box) return;
+  const s = Data.sales();
+  if (!s.length){ box.innerHTML = `<div class="empty"><span class="big">👥</span>لا مبيعات بعد</div>`; return; }
+  const by = {};
+  s.forEach(x => {
+    const nm = x.cashierName || "غير معروف";
+    if (!by[nm]) by[nm] = { name: nm, count: 0, total: 0, profit: 0, qty: 0 };
+    by[nm].count++;
+    by[nm].total += (x.total || 0);
+    by[nm].profit += (x.profit || 0);
+    by[nm].qty += (x.items || []).reduce((a,i) => a + (i.qty || 0), 0);
+  });
+  const arr = Object.values(by).sort((a,b) => b.total - a.total);
+  box.innerHTML = arr.map((c, i) => `
+    <div style="padding:14px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;flex:1">
+        <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#0f766e,#14b8a6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">${i+1}</div>
+        <div>
+          <div style="font-weight:700;font-size:15px">${escapeHTML(c.name)}</div>
+          <div style="font-size:12px;color:#64748b;margin-top:2px">${c.count} فاتورة · ${fmt(c.qty)} قطعة</div>
+        </div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-weight:800;color:#0f766e;font-size:16px">${money(c.total)}</div>
+        <div style="font-size:11.5px;color:#64748b;margin-top:2px">ربح: ${money(c.profit)}</div>
+      </div>
+    </div>`).join("");
+}
+
+function renderUsers(){
+  const tbody = $("usersTable"); if (!tbody) return;
+  const branchSel = $("uBranch");
+  branchSel.innerHTML = '<option value="">- بدون -</option>' + state.branches.map(b => `<option value="${b.id}">${escapeHTML(b.name)}</option>`).join("");
+  if (!state.users.length){ tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:22px">لا مستخدمين</td></tr>`; return; }
+  tbody.innerHTML = state.users.map(u => {
+    const branch = state.branches.find(b => b.id === u.branchId);
+    return `<tr>
+      <td>${escapeHTML(u.fullName)}</td>
+      <td><code>${escapeHTML(u.username)}</code></td>
+      <td><span class="tag role-${u.role}">${ROLE_LABELS[u.role]}</span></td>
+      <td>${branch ? escapeHTML(branch.name) : '<span class="muted">-</span>'}</td>
+      <td><span class="tag ${u.active ? "active" : "inactive"}">${u.active ? "نشط" : "موقوف"}</span></td>
+      <td>
+        <button class="blue sm" onclick="Users.edit(${u.id})">✏️</button>
+        <button class="red sm" onclick="Users.toggleActive(${u.id})">${u.active ? "⏸️" : "▶️"}</button>
+        <button class="red sm" onclick="Users.remove(${u.id})">🗑️</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function renderBranches(){
+  const tbody = $("branchesTable"); if (!tbody) return;
+  if (!state.branches.length){ tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:22px">لا فروع</td></tr>`; return; }
+  tbody.innerHTML = state.branches.map(b => {
+    const prods = state.products.filter(p => p.branchId === b.id);
+    const ts = state.sales.filter(s => s.branchId === b.id && isToday(s.date));
+    const tt = ts.reduce((t,s) => t + s.total, 0);
+    return `<tr>
+      <td><b>${escapeHTML(b.name)}</b></td>
+      <td>${escapeHTML(b.address || "-")}</td>
+      <td>${escapeHTML(b.phone || "-")}</td>
+      <td>${prods.length}</td>
+      <td>${money(tt)}</td>
+      <td>
+        <button class="blue sm" onclick="Branches.edit(${b.id})">✏️</button>
+        <button class="red sm" onclick="Branches.remove(${b.id})">🗑️</button>
+      </td>
+    </tr>`;
+  }).join("");
+}
+
+function renderSettings(){
+  if (!Auth.user) return;
+  const sn = $("setStoreName"); if (sn) sn.value = state.settings.storeName;
+  const sc = $("setCurrency"); if (sc) sc.value = state.settings.currency;
+}
+
+function showReceipt(sale){
+  const branch = state.branches.find(b => b.id === sale.branchId);
+  const rows = sale.items.map(i => `<tr><td>${escapeHTML(i.name)}</td><td>${i.qty}</td><td>${fmt(i.price)}</td><td>${fmt(i.total)}</td></tr>`).join("");
+  $("receiptBody").innerHTML = `
+    <div class="receipt">
+      <div class="receipt-head">
+        <h2>${escapeHTML(state.settings.storeName)}</h2>
+        ${branch ? `<p>🏢 ${escapeHTML(branch.name)}</p>` : ""}
+        <p>فاتورة رقم: <b>#${sale.invoice}</b></p>
+        <p>${fmtDate(sale.date)}</p>
+        <p>الكاشير: ${escapeHTML(sale.cashierName || "-")}</p>
+      </div>
+      <table class="receipt-table">
+        <thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="receipt-total"><span>الإجمالي</span><b>${money(sale.total)}</b></div>
+      <p class="thanks">شكراً لتعاملكم معنا 🌟</p>
+    </div>`;
+  $("receiptModal").classList.remove("hidden");
+}
+
+function showReceiptById(id){
+  const s = state.sales.find(x => x.id === id);
+  if (s) showReceipt(s);
+}
+
+const socket = io();
+socket.on("connect", () => { updateSyncUI(true); });
+socket.on("disconnect", () => { updateSyncUI(false); });
+socket.on("sync", async () => {
+  await fetchAllData();
+  if (Auth.user){ Auth.renderHeader(); renderAll(); }
+});
+
+function updateSyncUI(ok){
+  const dot = $("syncDot"), lbl = $("syncLabel");
+  if (dot) dot.className = "sync-dot" + (ok ? "" : " offline");
+  if (lbl) lbl.textContent = ok ? "متصل" : "غير متصل";
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !$("loginPage").classList.contains("hidden")) Auth.login();
+});
+
+(async function boot(){
+  await fetchAllData();
+  await Auth.checkSession();
+})();
+</script>
+<script src="/socket.io/socket.io.js"></script>
+</body>
+          </html>
