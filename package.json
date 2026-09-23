@@ -1,15 +1,10 @@
 {
-  "name": "market",
-  "version": "1.0.0",
-  "description": "",
+  "name": "supermarket-pro",
+  "version": "3.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "engines": {
     "node": ">=18"
   },
